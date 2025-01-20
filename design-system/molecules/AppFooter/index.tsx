@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 
 interface AppFooterProps {
   children: ReactNode;
@@ -8,10 +8,15 @@ interface AppFooterProps {
 
 const AppFooter = ({ children, background }: AppFooterProps) => {
   return (
-    <View
-      style={[styles.container, background && { backgroundColor: background }]}>
-      {children}
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={[styles.container, background && { backgroundColor: background }]}
+      keyboardVerticalOffset={60}
+    >
+     
+        {children}
+
+    </KeyboardAvoidingView>
   );
 };
 
@@ -19,15 +24,12 @@ export default AppFooter;
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute', 
-    bottom: 0,          
-    left: 0,            
-    right: 0,            
-    height: 70,
-    backgroundColor: 'white',
     justifyContent: 'center',
-    alignItems: 'center',
+    bottom: 0,
+    backgroundColor: 'white',
     borderTopWidth: 1,
     borderColor: 'gray',
+    alignItems: 'center',
+    alignContent: 'center',
   },
 });
