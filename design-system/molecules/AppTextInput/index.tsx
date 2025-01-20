@@ -1,28 +1,27 @@
+import { forwardRef, Ref } from "react";
 import { StyleSheet, TextInput, View } from "react-native"
 
 interface AppTextInputProps  {
     onTextChange: (e: string) => void;
     value: string
- 
-
-  
   }
   
 
 
-const AppTextInput = ({onTextChange, value}: AppTextInputProps) => {
+const AppTextInput = forwardRef<TextInput, AppTextInputProps>((props, ref) => {
 
     return (
    <TextInput
+        ref={ref}
         style={styles.input}
         placeholder={'Enter a task...'}
-        value={value}
-        onChangeText={(e) => onTextChange(e)}
+        value={props.value}
+        onChangeText={(e) => props.onTextChange(e)}
       />
 
      
     )
-}
+})
 
 export default AppTextInput;
 
