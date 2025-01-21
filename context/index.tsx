@@ -10,6 +10,8 @@ interface TodoContextType {
   addTodo: (text: string) => void;
   editTodo: (id: number, newText: string) => void;
   deleteTodo: (id: number) => void;
+  isAuthenticated: boolean;
+  setAuthenticated: (status: boolean) => void;
 }
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
@@ -17,6 +19,7 @@ const TodoContext = createContext<TodoContextType | undefined>(undefined);
 export const TodoProvider = ({ children }: { children: ReactNode }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [idCounter, setIdCounter] = useState<number>(1); // each item needs to be unique
+  const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
 
   const addTodo = (text: string) => {
     setTodos([...todos, { id: idCounter, text }]);
@@ -32,7 +35,8 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <TodoContext.Provider value={{ todos, addTodo, editTodo, deleteTodo }}>
+    <TodoContext.Provider value={{ todos, addTodo, editTodo, deleteTodo, isAuthenticated,
+      setAuthenticated, }}>
       {children}
     </TodoContext.Provider>
   );

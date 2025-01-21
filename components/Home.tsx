@@ -1,22 +1,63 @@
-import { SafeAreaView, StyleSheet, KeyboardAvoidingView, Platform, View, FlatList, Keyboard } from 'react-native';
-import { AppButton, AppFooter, AppText, AppTextInput } from '../design-system';
+import { SafeAreaView, StyleSheet, KeyboardAvoidingView, Platform, View, FlatList, Keyboard, Alert, Linking } from 'react-native';
+import { AppButton, AppFooter, AppModal, AppText, AppTextInput } from '../design-system';
 import { AppHeader } from '../design-system';
 import { useEffect, useRef, useState } from 'react';
 import { Swipeout } from 'react-native-swipeout-component';
 import { spacing } from '../design-system/spacing';
 import { useTodoContext } from '../context';
-import {
-    PacmanIndicator,
- 
-  } from 'react-native-indicators';
+import {PacmanIndicator} from 'react-native-indicators';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 
 export default function Home() {
   const [textInput, setTextInput] = useState<string>('');
-  const { todos, addTodo, editTodo, deleteTodo } = useTodoContext(); // Get context values
+  const { todos, addTodo, editTodo, deleteTodo, setAuthenticated, isAuthenticated } = useTodoContext(); // Get context values
   const [isEditing, setIsEditing] = useState(false)
   const [selectedItem, setSelectedItem] = useState<number | null>()
+  const [showModal, setShowModal] = useState(false)
+
   const textInputRef = useRef<any>(null)
+
+  const authenticateUser = async () => {
+    const isBiometricSupported = await LocalAuthentication.hasHardwareAsync();
+    if (!isBiometricSupported) {
+      return Alert.alert(
+        'Biometric Authentication',
+        'Your device does not support biometric authentication.'
+      );
+    }
+  
+    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+    if (!isEnrolled) {
+      return Alert.alert(
+        'Biometric Enrollment',
+        'No biometrics are enrolled. Would you like to set it up now?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Open settings',
+            onPress: () => {
+                Linking.openSettings().catch(() => {
+                  Alert.alert('Error', 'Unable to open settings.');
+                });
+              }, 
+          },
+        ]
+      );
+    }
+  
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: 'Authenticate to add a task',
+    });
+  
+    if (result.success) {
+      setAuthenticated(true); // Set the authenticated state in context
+      setShowModal(false)
+    } else {
+      Alert.alert('Authentication Failed', 'Could not verify your identity.');
+    }
+  };
+
   const handleAdd = () => {
     if (textInput.trim()) {
       addTodo(textInput); 
@@ -66,6 +107,18 @@ export default function Home() {
     },
   ];
 
+
+    //we need to check the authentication status before carrying out any action
+    useEffect(() => {
+        const checkAuth = async () => {
+            if (!isAuthenticated) {
+                setShowModal(true)
+              }
+        }
+     checkAuth()
+      
+    }, [showModal])
+
     // Detect when keyboard is dismissed and cancel the editing action
     useEffect(() => {
         const keyboardDidHideListener = Keyboard.addListener(
@@ -84,7 +137,14 @@ export default function Home() {
         };
       }, []);
 
+
+    const handleUnlockApp = async () => {
+         await authenticateUser();
+     
+    }
+
   return (
+    <>
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -137,7 +197,19 @@ export default function Home() {
           </View>
         </AppFooter>
       </KeyboardAvoidingView>
+
+
     </SafeAreaView>
+    <AppModal onClose={() => {setShowModal(false)}} isVisible={showModal}>
+    <AppText center variant='heading'>Unlock App</AppText>
+    <AppText center variant='body'>you need to be authenticated before adding a task</AppText>
+
+
+    <View style={{top: '20%'}}>
+        <AppButton title='Unlock' onPress={handleUnlockApp} />
+    </View>
+</AppModal>
+    </>
   );
 }
 
