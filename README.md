@@ -39,7 +39,9 @@
 ## Architecture
   ## Workflow
   I created the app in both bare and expo managed workflow. 
+  
   To Use the expo bare workflow you can clone this branch: https://github.com/mustymustafa/paidy-test/tree/bare-workflow
+  
   To use the managed workflow you can clone this branch: https://github.com/mustymustafa/paidy-test/tree/managed-workflow
 
  ## State management 
