@@ -49,3 +49,5 @@ export const useTodoContext = (): TodoContextType => {
   }
   return context;
 };
+
+export {TodoContext}
