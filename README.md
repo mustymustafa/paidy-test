@@ -39,8 +39,8 @@
 ## Architecture
   ## Workflow
   I created the app in both bare and expo managed workflow. 
-  To Use the expo bare workflow you can clone this branch: 
-  To use the managed workflow you can clone this branch:
+  To Use the expo bare workflow you can clone this branch: https://github.com/mustymustafa/paidy-test/tree/bare-workflow
+  To use the managed workflow you can clone this branch: https://github.com/mustymustafa/paidy-test/tree/managed-workflow
 
  ## State management 
   For the state management, i made use of the context API as opposed to redux due to the simplicity of the project. For larger projects redux might be a more suitable option
